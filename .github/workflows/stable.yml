@@ -33,6 +33,7 @@ jobs:
 
       - name: Build deb
         run: |
+          mkdir out
           rm -f packages/*
           gmake clean package FINALPACKAGE=1
           mv $(find packages -name "*.deb" -print -quit) out/Enmity.deb
