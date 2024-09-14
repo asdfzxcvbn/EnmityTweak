@@ -537,6 +537,7 @@ void SwizzleFromDict(NSString *kind, Class class) {
 }
 
 %ctor {
+	NSLog(@"[zx] what the fuck");
 	// https://github.com/vendetta-mod/VendettaTweak/blob/rewrite/Sources/VendettaTweak/Themes.x.swift#L61
     SwizzleFromDict(@"semantic", object_getClass(NSClassFromString(@"DCDThemeColor")));
     SwizzleFromDict(@"raw", object_getClass(NSClassFromString(@"UIColor")));

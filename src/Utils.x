@@ -4,6 +4,7 @@
 // Get the download url for Enmity.js
 NSString* getDownloadURL() {
   if (!IS_DEBUG) {
+    NSLog(@"[zx] got download url");
     return @"https://raw.githubusercontent.com/enmity-mod/enmity/main/dist/Enmity.js";
   }
 
@@ -47,22 +48,20 @@ BOOL checkForUpdate() {
 
 // Download a file
 BOOL downloadFile(NSString *source, NSString *dest) {
-  NSMutableURLRequest *downloadRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:source]];
-  downloadRequest.cachePolicy = NSURLRequestReloadIgnoringCacheData;
-  NSError *err;
+  NSURLRequest *req =
+    [NSURLRequest requestWithURL:[NSURL URLWithString:source]
+                     cachePolicy:0  // default uses iOS caching
+                 timeoutInterval:3.0];
+  __block BOOL ret = NO;
 
-  NSData *data = [NSURLConnection sendSynchronousRequest:downloadRequest returningResponse:nil error:&err];
+  [NSURLSession.sharedSession
+    dataTaskWithRequest:req
+    completionHandler:^(NSData *data, id resp, NSError *err) {
+      if (err != nil) return;
+      if (data != nil) ret = [data writeToFile:dest atomically:YES];
+    }];
 
-  if (err) {
-    return false;
-  }
-
-  if (data) {
-    [data writeToFile:dest atomically:YES];
-    return true;
-  }
-
-  return true;
+  return ret;
 }
 
 // Check if a file exists
@@ -73,6 +72,7 @@ BOOL checkFileExists(NSString *path) {
 
 // Create a folder
 BOOL createFolder(NSString *path) {
+  NSLog(@"[zx] creating %@", path);
   NSFileManager *fileManager = [NSFileManager defaultManager];
 
   if ([fileManager fileExistsAtPath:path]) {

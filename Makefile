@@ -1,9 +1,10 @@
-ARCHS := arm64 arm64e
-TARGET := iphone:clang:latest:7.0
+ARCHS := arm64
+TARGET := iphone:clang:latest:8.0
+INSTALL_TARGET_PROCESSES = Discord
 
 include $(THEOS)/makefiles/common.mk
 
-DEBUG_IP = 192.168.0.35
+DEBUG_IP = 192.168.50.114
 TWEAK_NAME = Enmity
 DEVTOOLS = 0
 Enmity_FILES = $(shell find src -name "*.x" && find src -name "*.xi")

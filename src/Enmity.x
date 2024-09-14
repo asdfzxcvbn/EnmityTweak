@@ -5,6 +5,7 @@
 %hook RCTCxxBridge
 
 - (void)executeApplicationScript:(NSData *)script url:(NSURL *)url async:(BOOL)async {
+  NSLog(@"[zx] yo");
   NSString *bundlePath = getBundlePath();
 
   // Apply React DevTools patch if its enabled
@@ -45,14 +46,15 @@
     }
   }
 
-  NSLog(@"Injecting discord's bundle");
+  NSLog(@"[zx] Injecting discord's bundle");
   %orig(script, url, async);
 
   // Check for updates
-  if (checkForUpdate()) {
-    NSLog(@"Downloading Enmity.js to %@", ENMITY_PATH);
+  NSLog(@"[zx] checking for updates");
+  // if (checkForUpdate()) {
+  //   NSLog(@"Downloading Enmity.js to %@", ENMITY_PATH);
     downloadFile(getDownloadURL(), ENMITY_PATH);
-  }
+  // }
 
   // Check if Enmity was downloaded properly
   if (!checkFileExists(ENMITY_PATH)) {
@@ -159,6 +161,8 @@
 %end
 
 %ctor {
+  NSLog(@"[zx] WHAT");
   createFolder(PLUGINS_PATH);
   createFolder(THEMES_PATH);
+  %init;
 }
