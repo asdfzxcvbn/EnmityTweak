@@ -1,12 +1,6 @@
 name: Create a stable release
 on:
   workflow_dispatch:
-    inputs:
-      discord_ipa_url:
-        description: "Discord IPA URL"
-        default: ""
-        required: true
-        type: string
 
 jobs:
   build:
@@ -32,26 +26,6 @@ jobs:
 
       - name: Prepare Theos
         uses: Randomblock1/theos-action@v1
-
-      - name: Prepare Azule
-        run : |
-          git clone https://github.com/Al4ise/Azule ${{ github.workspace }}/Azule
-          cd Azule
-          git checkout 27c02b415cff15b1c131a0e95bcc2438023f86da
-
-      - name: Prepare Enmity Patcher
-        run : |
-          curl -L https://github.com/enmity-mod/patcher/releases/latest/download/patcher.mac-amd64 -o ${{ github.workspace }}/patcher
-          chmod +x patcher
-      
-      - name: Download Discord IPA
-        run: |
-          curl -L ${{ inputs.discord_ipa_url }} -o ${{ github.workspace }}/Discord.ipa
-
-      - name: Patch Discord
-        run : |
-          ${{ github.workspace }}/patcher ${{ github.workspace }}/Discord.ipa
-          mkdir out
 
       - name: Retrieve version
         id: version
@@ -98,16 +72,6 @@ jobs:
           echo $"$(sed 's/Package\:.*/Package\: app.enmity.dev/' control)" > control
           gmake clean package FINALPACKAGE=1 DEVTOOLS=1 THEOS_PACKAGE_SCHEME=rootless
           mv $(find packages -name "*.deb" -print -quit) out/Enmity.Rootless.Development.deb
-
-      - name: Create Enmity.ipa
-        run : |
-          ${{ github.workspace }}/Azule/azule -U -i Enmity.ipa -o out -f out/Enmity.Sideload.deb
-          mv out/Enmity+Enmity.Sideload.deb.ipa out/Enmity.ipa
-
-      - name: Create Enmity.Dev.ipa
-        run : |
-          ${{ github.workspace }}/Azule/azule -U -i Enmity.ipa -o out -f out/Enmity.Sideload.Development.deb
-          mv out/Enmity+Enmity.Sideload.Development.deb.ipa out/Enmity.Development.ipa
 
       - name: Create release
         uses: marvinpinto/action-automatic-releases@latest
